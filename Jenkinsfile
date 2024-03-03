@@ -10,9 +10,7 @@ pipeline {
     stages {
         stage('Poll') {
             steps {
-                // Add your SCM checkout step here
-                // For example:
-                // git 'https://https://github.com/santonix/hello-world-greeting.git'
+                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/santonix/hello-world-greeting.git']])
             }
         }
 
