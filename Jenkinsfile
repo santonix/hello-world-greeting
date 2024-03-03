@@ -12,7 +12,7 @@ pipeline {
             steps {
                 // Add your SCM checkout step here
                 // For example:
-                // git 'https://github.com/your/repository.git'
+                // git 'https://https://github.com/santonix/hello-world-greeting.git'
             }
         }
 
