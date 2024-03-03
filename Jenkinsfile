@@ -1,11 +1,7 @@
 pipeline {
-    agent {
-        docker {
-            // Use the custom Docker image for the Jenkins agent
-            image 'maven-build-slave-0.2'
-            // Other configuration options like labels, custom registry, etc. can be added here
-        }
-    }
+    agent  any
+       
+    
 
     stages {
         stage('Poll') {
