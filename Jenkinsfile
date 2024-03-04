@@ -1,5 +1,9 @@
 pipeline {
-    agent  any
+    agent  {
+        docker {
+            image 'maven-build-slave-0.1'
+        }
+    }    
        
     
 
