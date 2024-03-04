@@ -1,10 +1,10 @@
 pipeline {
     agent {
-        docker {
-            image 'maven-build-slave-0.1'
+       
+           
             label 'docker'
-            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker-in-Docker support
-        }
+            
+       
     }
        
     stages {
