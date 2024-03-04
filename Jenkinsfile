@@ -1,18 +1,12 @@
 pipeline {
     agent {
-        docker {
-            // Use the custom Docker image for the Jenkins agent
-            image 'maven-build-slave-0.1'
-            // Other configuration options like labels, custom registry, etc. can be added here
-        }
-    } 
+        label 'docker'
+    }
        
-    
-
     stages {
         stage('Poll') {
             steps {
-                checkout scmGit(branches: [[name: '*/master']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/santonix/hello-world-greeting.git']])
+                git branch: 'master', url: 'https://github.com/santonix/hello-world-greeting.git'
             }
         }
 
@@ -27,7 +21,9 @@ pipeline {
 
         stage('Static Code Analysis') {
             steps {
-                sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=$BUILD_NUMBER'
+                withSonarQubeEnv('SonarQube') {
+                    sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=${BUILD_NUMBER}'
+                }
             }
         }
 
