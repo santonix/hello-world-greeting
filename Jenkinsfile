@@ -12,6 +12,7 @@ pipeline {
 
         stage('Build & Unit test') {
             steps {
+                sh 'mvn clean install'
                 sh 'mvn clean verify -DskipITs=true'
                 junit '**/target/surefire-reports/TEST-*.xml'
                 archiveArtifacts 'target/*.jar'
