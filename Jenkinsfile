@@ -1,6 +1,9 @@
 pipeline {
     agent {
-        label 'docker'
+        docker {
+            image 'maven-build-slave-0.1'
+            args '-v /var/run/docker.sock:/var/run/docker.sock' // Mount Docker socket for Docker-in-Docker support
+        }
     }
        
     stages {
@@ -12,7 +15,7 @@ pipeline {
 
         stage('Build & Unit test') {
             steps {
-                
+                sh 'mvn clean install'
                 sh 'mvn clean verify -DskipITs=true'
                 junit '**/target/surefire-reports/TEST-*.xml'
                 archiveArtifacts 'target/*.jar'
