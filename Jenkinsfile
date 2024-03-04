@@ -33,7 +33,7 @@ pipeline {
 
         stage('Integration Test') {
             steps {
-                sh 'mvn clean verify -Dsurefire.skip=true'
+                sh 'mvn clean 
                 junit '**/target/failsafe-reports/TEST-*.xml'
                 archiveArtifacts 'target/*.jar'
             }
