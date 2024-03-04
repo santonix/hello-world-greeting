@@ -1,9 +1,11 @@
 pipeline {
-    agent  {
+    agent {
         docker {
+            // Use the custom Docker image for the Jenkins agent
             image 'maven-build-slave-0.1'
+            // Other configuration options like labels, custom registry, etc. can be added here
         }
-    }    
+    } 
        
     
 
