@@ -1,7 +1,7 @@
 pipeline {
     agent {
-        docker { 
-            label 'maven-build-slave-0.1'
+        node { 
+            label 'docker'
         }
     }
     
