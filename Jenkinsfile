@@ -1,44 +1,45 @@
 pipeline {
     agent {
-       
-           
+        node {
             label 'docker'
-            
-       
+        }
     }
-       
+    
     stages {
         stage('Poll') {
             steps {
-                git branch: 'master', url: 'https://github.com/santonix/hello-world-greeting.git'
+                scm checkout
             }
         }
-
+        
         stage('Build & Unit test') {
             steps {
-               
-                sh 'mvn clean verify -DskipITs=true'
-                junit '**/target/surefire-reports/TEST-*.xml'
-                archiveArtifacts 'target/*.jar'
-            }
-        }
-
-        stage('Static Code Analysis') {
-            steps {
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=${BUILD_NUMBER}'
+                script {
+                    sh 'mvn clean verify -DskipITs=true'
+                    junit '**/target/surefire-reports/TEST-*.xml'
+                    archive 'target/*.jar'
                 }
             }
         }
-
-        stage('Integration Test') {
+        
+        stage('Static Code Analysis') {
             steps {
-                sh 'mvn clean 
-                junit '**/target/failsafe-reports/TEST-*.xml'
-                archiveArtifacts 'target/*.jar'
+                script {
+                    sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=$BUILD_NUMBER'
+                }
             }
         }
-
+        
+        stage('Integration Test') {
+            steps {
+                script {
+                    sh 'mvn clean verify -Dsurefire.skip=true'
+                    junit '**/target/failsafe-reports/TEST-*.xml'
+                    archive 'target/*.jar'
+                }
+            }
+        }
+        
         stage('Publish') {
             steps {
                 script {
