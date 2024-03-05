@@ -1,7 +1,7 @@
 pipeline {
     agent {
         docker { 
-            image 'maven-build-slave-0.1'
+            label 'maven-build-slave-0.1'
         }
     }
     
