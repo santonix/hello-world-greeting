@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker { 
+            image 'maven-build-slave-0.1'
+        }
+    }
     
     stages {
         stage('Poll') {
@@ -22,8 +26,10 @@ pipeline {
         
         stage('Static Code Analysis') {
             steps {
-                script {
-                    sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=$BUILD_NUMBER'
+                withCredentials([string(credentialsId: 'jenkins-sonar-token', variable: 'SONAR_TOKEN')]) {
+                    script {
+                        sh "mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=$BUILD_NUMBER -Dsonar.login=${env.SONAR_TOKEN}"
+                    }
                 }
             }
         }
