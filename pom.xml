@@ -15,25 +15,28 @@
   </properties>
 
   <dependencies>
+    
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-war-plugin</artifactId>
+      <version>3.4.1-SNAPSHOT</version> <!-- Specify the desired version -->
+      <type>maven-plugin</type>
+    </dependency>
+
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.12</version>
       <scope>test</scope>
     </dependency>
-    
-    <!-- Adding Maven Filtering Dependency -->
-    <dependency>
-      <groupId>org.apache.maven.shared</groupId>
-      <artifactId>maven-filtering</artifactId>
-      <version>1.0-beta-2</version>
-    </dependency>
-    <!-- End of Maven Filtering Dependency -->
   </dependencies>
 
   <build>
     <pluginManagement>
-      <plugins>    
+      <plugins> 
+
+
         
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
@@ -88,6 +91,7 @@
   <reporting>
     <plugins>
       <plugin>
+        <!-- JUnit code coverage. -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>cobertura-maven-plugin</artifactId>
         <version>2.6</version>
@@ -96,4 +100,3 @@
   </reporting>
 
 </project>
-
