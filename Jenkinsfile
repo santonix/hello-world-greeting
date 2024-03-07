@@ -18,7 +18,7 @@ pipeline {
             steps {
                 script {
                     sh 'mvn clean verify -DskipITs=true'
-                    junit '**/target/surefire-reports/*.xml'
+                    junit '**/target/surefire-reports/TEST-in.ashokit.BooksAppApplicationTests.xml'
                     archive 'target/*.jar'
                 }
             }
