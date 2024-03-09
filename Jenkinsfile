@@ -13,22 +13,21 @@ pipeline {
                 archiveArtifacts 'target/*.war'
             }
         }
-        stage('Static Code Analysis') {
+        stage("build & SonarQube analysis") {
+            
             steps {
-                script {
-                    def scannerHome = tool 'sonar-scanner'
-                    withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-                       sh  "${scannerHome}/bin/sonar-scanner",
-                       returnStatus: true, 
-                               "-Dsonar.projectName=hello-world-greeting " +
-                               "-Dsonar.projectKey=hello-world-greeting " +
-                               "-Dsonar.projectVersion=${BUILD_NUMBER}"  
-                           
-                            
-                    }
-                }
+              withSonarQubeEnv(' sonarQube server') {
+                sh 'mvn clean package sonar:sonar'
+              }
             }
-        }
+          }
+          stage("Quality Gate") {
+            steps {
+              timeout(time: 1, unit: 'HOURS') {
+                waitForQualityGate abortPipeline: true
+              }
+            }
+          }
         stage('Integration Test') {
             steps {
                 sh 'mvn clean verify -Dsurefire.skip=true'
