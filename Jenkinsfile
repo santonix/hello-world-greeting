@@ -14,15 +14,18 @@ pipeline {
             }
         }
         stage('Static Code Analysis'){
-          script {
-            def scannerHome = tool 'sonarqube_scanner';
-            withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-              sh "${scannerHome}/bin/sonar-scanner \
-                  -Dsonar.projectName=hello-world-greeting \
-                  -Dsonar.projectKey=hello-world-greeting \
-                  -Dsonar.projectVersion=${BUILD_NUMBER}"
+            steps {
+                script {
+                  def scannerHome = tool 'sonarqube_scanner';
+                  withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+                    sh "${scannerHome}/bin/sonar-scanner \
+                    -Dsonar.projectName=hello-world-greeting \
+                    -Dsonar.projectKey=hello-world-greeting \
+                    -Dsonar.projectVersion=${BUILD_NUMBER}"
+                  }
+                }
             }
-          }
+          
         }
         stage('Integration Test') {
             steps {
