@@ -16,7 +16,7 @@ pipeline {
         stage('Static Code Analysis'){
             steps {
                 script {
-                  def scannerHome = tool 'sonarqube_scanner';
+                  def scannerHome = tool 'sonar scanner';
                   withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
                     sh "${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectName=hello-world-greeting \
