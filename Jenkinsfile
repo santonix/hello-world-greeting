@@ -20,7 +20,7 @@ node('docker') {
             "files": [
                 {
                     "pattern": "target/hello-0.0.1.war",
-                    "target": "hello-world-greeting/${BUILD_NUMBER}/",
+                    "target": "helloworld-greeting/${BUILD_NUMBER}/",
                     "props": "Integration-Tested=Yes;Performance-Tested=No"
                 }
             ]
