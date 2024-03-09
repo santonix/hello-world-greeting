@@ -13,7 +13,7 @@ pipeline {
                 archiveArtifacts 'target/*.war'
             }
         }
-        stage("build & SonarQube analysis") {
+        stage("build & sonarqube analysis") {
             
             steps {
               withSonarQubeEnv(' sonarqube server') {
