@@ -1,8 +1,6 @@
 pipeline {
     agent {
-      node {    
         label 'docker'
-      }    
     }
     stages {
         stage('Poll') {
@@ -46,40 +44,20 @@ pipeline {
                 stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
             }
         }
-        stage('Deploy') {
+        stage('Deploy & Performance Testing') {
             agent {
                 label 'docker_pt'
             }
             steps {
                 sh '''cd /home/jenkins/tomcat/bin && \
                     ./startup.sh'''
-            }
-        }
-        stage('Deploy') {
-            agent {
-              node {    
-                label 'docker_pt'
-              }    
-            }
-            steps {
                 script {
                     unstash 'binary'
                     sh 'cp target/hello-0.0.1.war /home/jenkins/tomcat/webapps/'
                 }
-            }
-        }
-        stage('Performance Testing') {
-            agent {
-                label 'docker_pt'
-            }
-            steps {
                 sh '''cd /opt/jmeter/bin/ && \
                     ./jmeter.sh -n -t $WORKSPACE/src/pt/Hello_World_Test_Plan.jmx -l $WORKSPACE/test_report.jtl'''
                 step([$class: 'ArtifactArchiver', artifacts: '**/*.jtl'])
-            }
-        }
-        stage('Promote build in Artifactory') {
-            steps {
                 withCredentials([usernameColonPassword(credentialsId: 'artifactory-account', variable: 'credentials')]) {
                     sh 'curl -u${credentials} -X PUT "http://192.168.1.91:8085/api/storage/hello-world-greeting/${BUILD_NUMBER}/hello-0.0.1.war?properties=Performance-Tested=Yes"'
                 }
@@ -87,3 +65,4 @@ pipeline {
         }
     }
 }
+
