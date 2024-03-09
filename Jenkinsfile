@@ -35,7 +35,8 @@ node('docker') {
 
 node('docker_pt') {
     stage('Start Tomcat') {
-       sh 'cd /home/jenkins/tomcat/bin &&  bash startup.sh'
+       sh ''' cd /home/jenkins/tomcat/bin \
+              ./startup.sh '''
         
     }
     stage('Deploy') {
