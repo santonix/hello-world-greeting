@@ -8,7 +8,7 @@ node('docker') {
         archive 'target/*.jar'
     }
     stage('Static Code Analysis'){
-        sh 'mvn clean verify sonar:sonar -Dsonar.projectName=hello-world-greeting -Dsonar.projectKey=hello-world-greeting -Dsonar.projectVersion=$BUILD_NUMBER';
+        sh 'mvn clean verify sonar:sonar -Dsonar.login=jenkins-sonar-token -Dsonar.projectName=hello-world-greeting -Dsonar.projectKey=hello-world-greeting -Dsonar.projectVersion=$BUILD_NUMBER';
     }
     stage ('Integration Test'){
         sh 'mvn clean verify -Dsurefire.skip=true';
