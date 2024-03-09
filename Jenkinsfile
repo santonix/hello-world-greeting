@@ -8,17 +8,14 @@ node('docker') {
         archive 'target/*.jar'
     }
     
-    stage('Static Code Analysis'){
-      script {
-        def scannerHome = tool 'sonar scanner';
-        withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-            sh "${scannerHome}/bin/sonar-scanner \
-                -Dsonar.projectName=hello-world-greeting \
-                -Dsonar.projectKey=hello-world-greeting \
-                -Dsonar.projectVersion=${BUILD_NUMBER} \
-                -Dsonar.java.binaries=${project.basedir}/target/classes"
-        }
-      }
+    stage('Static Code Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'jenkins-sonar-token', variable: 'SONAR_TOKEN')]) {
+                    script {
+                        sh "mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=$BUILD_NUMBER -Dsonar.login=${env.SONAR_TOKEN}"
+                    }
+                }
+            }
     }
     stage ('Publish'){
         def server = Artifactory.server 'Default Artifactory Server'
