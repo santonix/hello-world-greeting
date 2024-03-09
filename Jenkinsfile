@@ -16,8 +16,10 @@ pipeline {
         stage("build & sonarqube analysis") {
             
             steps {
-              withSonarQubeEnv(' sonarqube server') {
-                sh 'mvn clean package sonar:sonar'
+              withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+                sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=${BUILD_NUMBER} -Dsonar.java.binaries=target/classes
+
+                
               }
             }
           }
