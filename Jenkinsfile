@@ -1,6 +1,8 @@
 pipeline {
     agent {
+      node {  
         label 'docker'
+      }    
     }
     stages {
         stage('Poll') {
@@ -46,7 +48,9 @@ pipeline {
         }
         stage('Deploy & Performance Testing') {
             agent {
+              node {
                 label 'docker_pt'
+              }       
             }
             steps {
                 sh '''cd /home/jenkins/tomcat/bin && \
