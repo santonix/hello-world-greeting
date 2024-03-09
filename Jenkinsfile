@@ -14,15 +14,17 @@ pipeline {
             }
         }
         stage('Static Code Analysis') {
-            script {
-                def scannerHome = tool 'sonar-scanner'
-                withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-                 sh script: "${scannerHome}/bin/sonar-scanner", 
-                 returnStatus: true, 
-                 script: "-Dsonar.projectName=hello-world-greeting " +
-                         "-Dsonar.projectKey=hello-world-greeting " +
-                         "-Dsonar.projectVersion=${BUILD_NUMBER}"
-                }         
+            steps {
+                script {
+                    def scannerHome = tool 'sonar-scanner'
+                    withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+                        sh script: "${scannerHome}/bin/sonar-scanner", 
+                           returnStatus: true, 
+                           args: "-Dsonar.projectName=hello-world-greeting " +
+                                 "-Dsonar.projectKey=hello-world-greeting " +
+                                 "-Dsonar.projectVersion=${BUILD_NUMBER}"
+                    }
+                }
             }
         }
         stage('Integration Test') {
@@ -55,7 +57,6 @@ pipeline {
             }
         }
     }
-    
 }
 
 pipeline {
