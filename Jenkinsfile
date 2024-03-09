@@ -16,23 +16,21 @@ pipeline {
         stage("build & sonarqube analysis") {
             steps {
                 withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-                  sh '''mvn clean verify sonar:sonar \
-                    -Dsonar.projectName=example-project \
-                    -Dsonar.projectKey=example-project \
-                    -Dsonar.projectVersion=${BUILD_NUMBER} \
-                    -Dsonar.java.binaries=target/classes'''
+                    sh '''mvn clean verify sonar:sonar \
+                        -Dsonar.projectName=hello-world-greeting \
+                        -Dsonar.projectKey=hello-world-greeting \
+                        -Dsonar.projectVersion=${BUILD_NUMBER} \
+                        -Dsonar.java.binaries=target/classes'''
                 }
             }
         }
-
         stage("Quality Gate") {
-           steps {
+            steps {
                 timeout(time: 1, unit: 'HOURS') {
-                  waitForQualityGate abortPipeline: true
+                    waitForQualityGate abortPipeline: true
                 }
             }
         }
-
         stage('Integration Test') {
             steps {
                 sh 'mvn clean verify -Dsurefire.skip=true'
@@ -62,28 +60,25 @@ pipeline {
                 stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
             }
         }
-    
-    
+    }
+}
 
-
-
+pipeline {
+    agent { node { label 'docker_pt' } }
+    stages {
         stage('Start Tomcat') {
-            agent { node { label 'docker_pt' } }
             steps {
                 sh '''cd /home/jenkins/tomcat/bin && \
                     ./startup.sh'''
             }
         }
         stage('Deploy') {
-            
-            agent { node { label 'docker_pt' } }
             steps {
                 unstash 'binary'
                 sh 'cp target/hello-0.0.1.war /home/jenkins/tomcat/webapps/'
             }
         }
         stage('Performance Testing') {
-            agent { node { label 'docker_pt' } }
             steps {
                 sh '''cd /opt/jmeter/bin/
                 ./jmeter.sh -n -t $WORKSPACE/src/pt/Hello_World_Test_Plan.jmx -l $WORKSPACE/test_report.jtl'''
@@ -91,7 +86,6 @@ pipeline {
             }
         }
         stage('Promote build in Artifactory') {
-            agent { node { label 'docker_pt' } }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'artifactory-account', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
