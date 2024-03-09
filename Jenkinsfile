@@ -13,23 +13,17 @@ pipeline {
                 archiveArtifacts 'target/*.war'
             }
         }
-        stage('Static Code Analysis'){
-            steps {
-                script {
-                  def scannerHome = tool 'sonar-scanner';
-                  withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-                    sh "${scannerHome}/bin/sonar-scanner \
-                    -Dsonar.projectName=hello-world-greeting \
-                    -Dsonar.projectKey=hello-world-greeting \
-                    -Dsonar.java.binaries=${project.basedir}/target/classes \
-                    -Dsonar.projectVersion=${BUILD_NUMBER}" 
- 
-                    
-                  }
-                }
-            }
-          
+        stage('Static Code Analysis') {
+          script {
+            def scannerHome = tool 'sonar-scanner'
+            withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+               sh script: "${scannerHome}/bin/sonar-scanner", 
+               returnStatus: true, 
+               script: "-Dsonar.projectName=hello-world-greeting " +
+                       "-Dsonar.projectKey=hello-world-greeting " +
+                       "-Dsonar.projectVersion=${BUILD_NUMBER}"
         }
+  
         stage('Integration Test') {
             steps {
                 sh 'mvn clean verify -Dsurefire.skip=true'
