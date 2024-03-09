@@ -18,10 +18,13 @@ pipeline {
                 script {
                     def scannerHome = tool 'sonar-scanner'
                     withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-                        sh "${scannerHome}/bin/sonar-scanner \
-                            -Dsonar.projectName=hello-world-greeting \
-                            -Dsonar.projectKey=hello-world-greeting \
-                            -Dsonar.projectVersion=${BUILD_NUMBER}"
+                       sh script: "${scannerHome}/bin/sonar-scanner",
+                       returnStatus: true, 
+                       script: "-Dsonar.projectName=hello-world-greeting " +
+                               "-Dsonar.projectKey=hello-world-greeting " +
+                               "-Dsonar.projectVersion=${BUILD_NUMBER}"  
+                           
+                            
                     }
                 }
             }
