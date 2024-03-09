@@ -14,21 +14,22 @@ pipeline {
             }
         }
         stage('Static Code Analysis') {
-          script {
-            def scannerHome = tool 'sonar-scanner'
-            withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-               sh script: "${scannerHome}/bin/sonar-scanner", 
-               returnStatus: true, 
-               script: "-Dsonar.projectName=hello-world-greeting " +
-                       "-Dsonar.projectKey=hello-world-greeting " +
-                       "-Dsonar.projectVersion=${BUILD_NUMBER}"
+            script {
+                def scannerHome = tool 'sonar-scanner'
+                withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+                 sh script: "${scannerHome}/bin/sonar-scanner", 
+                 returnStatus: true, 
+                 script: "-Dsonar.projectName=hello-world-greeting " +
+                         "-Dsonar.projectKey=hello-world-greeting " +
+                         "-Dsonar.projectVersion=${BUILD_NUMBER}"
+                }         
+            }
         }
-  
         stage('Integration Test') {
             steps {
                 sh 'mvn clean verify -Dsurefire.skip=true'
                 junit '**/target/failsafe-reports/TEST-*.xml'
-                archiveArtifacts 'target/*.jar'
+                archiveArtifacts 'target/*.war'
             }
         }
         stage('Publish') {
@@ -62,8 +63,8 @@ pipeline {
     stages {
         stage('Start Tomcat') {
             steps {
-                sh '''cd /home/jenkins/tomcat/bin
-                ./startup.sh'''
+                sh '''cd /home/jenkins/tomcat/bin && \
+                    ./startup.sh'''
             }
         }
         stage('Deploy') {
@@ -91,4 +92,3 @@ pipeline {
         }
     }
 }
-
