@@ -14,22 +14,25 @@ pipeline {
             }
         }
         stage("build & sonarqube analysis") {
-            
             steps {
-              withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-                sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=${BUILD_NUMBER} -Dsonar.java.binaries=target/classes
+                withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+                  sh '''mvn clean verify sonar:sonar \
+                    -Dsonar.projectName=example-project \
+                    -Dsonar.projectKey=example-project \
+                    -Dsonar.projectVersion=${BUILD_NUMBER} \
+                    -Dsonar.java.binaries=target/classes'''
+                }
+            }
+        }
 
-                
-              }
+        stage("Quality Gate") {
+           steps {
+                timeout(time: 1, unit: 'HOURS') {
+                  waitForQualityGate abortPipeline: true
+                }
             }
-          }
-          stage("Quality Gate") {
-            steps {
-              timeout(time: 1, unit: 'HOURS') {
-                waitForQualityGate abortPipeline: true
-              }
-            }
-          }
+        }
+
         stage('Integration Test') {
             steps {
                 sh 'mvn clean verify -Dsurefire.skip=true'
@@ -59,6 +62,11 @@ pipeline {
                 stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
             }
         }
+    
+    
+
+
+
         stage('Start Tomcat') {
             agent { node { label 'docker_pt' } }
             steps {
@@ -67,6 +75,7 @@ pipeline {
             }
         }
         stage('Deploy') {
+            
             agent { node { label 'docker_pt' } }
             steps {
                 unstash 'binary'
