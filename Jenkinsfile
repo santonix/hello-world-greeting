@@ -5,7 +5,7 @@ node('docker') {
     stage('Build & Unit test') {
         sh 'mvn clean verify -DskipITs=true'
         junit '**/target/surefire-reports/TEST-*.xml'
-        archiveArtifacts '/var/lib/jenkins/workspace/multi-brch_master/target/*.war'
+        archiveArtifacts 'target/*.war'
     }
     
     stage('Static Code Analysis') {
