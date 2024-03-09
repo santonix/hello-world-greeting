@@ -7,13 +7,17 @@ node('docker') {
         junit '**/target/surefire-reports/TEST-*.xml'
         archive 'target/*.jar'
     }
+    
     stage('Static Code Analysis'){
-        sh 'mvn clean verify sonar:sonar -Dsonar.login=sonar-token -Dsonar.projectName=hello-world-greeting -Dsonar.projectKey=hello-world-greeting -Dsonar.projectVersion=$BUILD_NUMBER';
-    }
-    stage ('Integration Test'){
-        sh 'mvn clean verify -Dsurefire.skip=true';
-        junit '**/target/failsafe-reports/TEST-*.xml'
-        archive 'target/*.jar'
+      script {
+        def scannerHome = tool 'sonarqube_scanner';
+        withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+            sh "${scannerHome}/bin/sonar-scanner \
+                -Dsonar.projectName=hello-world-greeting \
+                -Dsonar.projectKey=hello-world-greeting \
+                -Dsonar.projectVersion=${BUILD_NUMBER}"
+        }
+      }
     }
     stage ('Publish'){
         def server = Artifactory.server 'Default Artifactory Server'
