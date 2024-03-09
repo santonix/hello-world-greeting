@@ -13,9 +13,9 @@ pipeline {
                 archiveArtifacts 'target/*.war'
             }
         }
-        stage("build & sonarqube analysis") {
+        stage('Build & SonarQube Analysis') {
             steps {
-                 withSonarQubeEnv(credentialsId: 'jenkins-sonar-token', installationName: 'sonarqube server') {
+                withSonarQubeEnv(credentialsId: 'jenkins-sonar-token', installationName: 'sonarqube server') {
                     sh '''mvn clean verify sonar:sonar \
                         -Dsonar.projectName=hello-world-greeting \
                         -Dsonar.projectKey=hello-world-greeting \
@@ -79,7 +79,7 @@ pipeline {
                 step([$class: 'ArtifactArchiver', artifacts: '**/*.jtl'])
             }
         }
-        stage('Promote build in Artifactory') {
+        stage('Promote Build in Artifactory') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'artifactory-account', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
