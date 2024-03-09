@@ -18,11 +18,10 @@ pipeline {
                 script {
                     def scannerHome = tool 'sonar-scanner'
                     withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
-                        sh script: "${scannerHome}/bin/sonar-scanner", 
-                           returnStatus: true, 
-                           args: "-Dsonar.projectName=hello-world-greeting " +
-                                 "-Dsonar.projectKey=hello-world-greeting " +
-                                 "-Dsonar.projectVersion=${BUILD_NUMBER}"
+                        sh "${scannerHome}/bin/sonar-scanner \
+                            -Dsonar.projectName=hello-world-greeting \
+                            -Dsonar.projectKey=hello-world-greeting \
+                            -Dsonar.projectVersion=${BUILD_NUMBER}"
                     }
                 }
             }
@@ -37,7 +36,7 @@ pipeline {
         stage('Publish') {
             steps {
                 script {
-                    def server = Artifactory.server 'default artifactory server'
+                    def server = Artifactory.server 'Default Artifactory Server'
                     def uploadSpec = """{
                         "files": [
                             {
@@ -56,25 +55,22 @@ pipeline {
                 stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
             }
         }
-    }
-}
-
-pipeline {
-    agent { node { label 'docker_pt' } }
-    stages {
         stage('Start Tomcat') {
+            agent { node { label 'docker_pt' } }
             steps {
                 sh '''cd /home/jenkins/tomcat/bin && \
                     ./startup.sh'''
             }
         }
         stage('Deploy') {
+            agent { node { label 'docker_pt' } }
             steps {
                 unstash 'binary'
                 sh 'cp target/hello-0.0.1.war /home/jenkins/tomcat/webapps/'
             }
         }
         stage('Performance Testing') {
+            agent { node { label 'docker_pt' } }
             steps {
                 sh '''cd /opt/jmeter/bin/
                 ./jmeter.sh -n -t $WORKSPACE/src/pt/Hello_World_Test_Plan.jmx -l $WORKSPACE/test_report.jtl'''
@@ -82,6 +78,7 @@ pipeline {
             }
         }
         stage('Promote build in Artifactory') {
+            agent { node { label 'docker_pt' } }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'artifactory-account', usernameVariable: 'USERNAME', passwordVariable: 'PASSWORD')]) {
                     script {
