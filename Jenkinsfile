@@ -15,7 +15,7 @@ pipeline {
         }
         stage("build & sonarqube analysis") {
             steps {
-                withSonarQubeEnv(credentialsId: 'jenkins-sonar-token') {
+                 withSonarQubeEnv(credentialsId: 'jenkins-sonar-token', installationName: 'sonarqube server') {
                     sh '''mvn clean verify sonar:sonar \
                         -Dsonar.projectName=hello-world-greeting \
                         -Dsonar.projectKey=hello-world-greeting \
