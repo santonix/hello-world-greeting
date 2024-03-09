@@ -21,9 +21,10 @@ pipeline {
                     sh "${scannerHome}/bin/sonar-scanner \
                     -Dsonar.projectName=hello-world-greeting \
                     -Dsonar.projectKey=hello-world-greeting \
-                     -Dsonar.java.binaries=${project.basedir}/target/classes \
+                    -Dsonar.java.binaries=${project.basedir}/target/classes \
+                    -Dsonar.projectVersion=${BUILD_NUMBER}" 
  
-                    -Dsonar.projectVersion=${BUILD_NUMBER}"
+                    
                   }
                 }
             }
