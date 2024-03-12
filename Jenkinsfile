@@ -54,12 +54,10 @@ pipeline {
                 stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
             }
         }
-    }
-}
+    
 
-pipeline {
-    agent { node { label 'docker_pt' } }
-    stages {
+
+
         stage('Start Tomcat') {
             steps {
                 sh '''cd /home/jenkins/tomcat/bin && \
