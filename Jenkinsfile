@@ -41,6 +41,7 @@ pipeline {
         }
 
         stage('Publish') {
+            agent { label 'docker' }
             steps {
                 script {
                     def server = Artifactory.server 'default artifactory server'
@@ -58,6 +59,7 @@ pipeline {
             }
         }
         stage('Stash') {
+            agent { label 'docker' }
             steps {
                 stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
             }
