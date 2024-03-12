@@ -60,8 +60,9 @@ pipeline {
 
         stage('Start Tomcat') {
             steps {
-                sh '''cd /home/jenkins/tomcat/bin && \
-                    ./startup.sh'''
+                sh '''su jenins && \
+                       cd /home/jenkins/tomcat/bin && \
+                      ./startup.sh'''
             }
         }
         stage('Deploy') {
