@@ -18,10 +18,15 @@ pipeline {
             }
         }
 
-        stage('Static Code Analysis') {
-            agent { label 'docker' }
+        stage('Build & SonarQube Analysis') {
             steps {
-                sh "mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=${BUILD_NUMBER}"
+                withSonarQubeEnv(credentialsId: 'jenkins-sonar-token', installationName: 'sonarqube server') {
+                    sh '''mvn clean verify sonar:sonar \
+                        -Dsonar.projectName=hello-world-greeting \
+                        -Dsonar.projectKey=hello-world-greeting \
+                        -Dsonar.projectVersion=${BUILD_NUMBER} \
+                        -Dsonar.java.binaries=target/classes'''
+                }
             }
         }
 
