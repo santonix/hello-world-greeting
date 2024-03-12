@@ -19,6 +19,7 @@ pipeline {
         }
 
         stage('Build & SonarQube Analysis') {
+            agent { label 'docker' }
             steps {
                 withSonarQubeEnv(credentialsId: 'jenkins-sonar-token', installationName: 'sonarqube server') {
                     sh '''mvn clean verify sonar:sonar \
