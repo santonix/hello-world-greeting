@@ -59,6 +59,9 @@ pipeline {
 
 
         stage('Start Tomcat') {
+        agent { node { label 'docker_pt' } }
+            
+        }
             steps {
                 sh '''su jenins && \
                        cd /home/jenkins/tomcat/bin && \
