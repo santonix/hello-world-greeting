@@ -14,7 +14,7 @@ pipeline {
             steps {
                 sh 'mvn clean verify -DskipITs=true'
                 junit '**/target/surefire-reports/TEST-*.xml'
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'target/*.war', fingerprint: true
             }
         }
 
@@ -30,7 +30,7 @@ pipeline {
             steps {
                 sh 'mvn clean verify -Dsurefire.skip=true'
                 junit '**/target/failsafe-reports/TEST-*.xml'
-                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+                archiveArtifacts artifacts: 'target/*.war', fingerprint: true
             }
         }
 
