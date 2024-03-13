@@ -5,7 +5,7 @@ node('docker') {
     stage('Build & Unit test'){
         sh 'mvn clean verify -DskipITs=true';
         junit '**/target/surefire-reports/TEST-*.xml'
-        archive 'target/*.jar'
+        archive 'target/*.war'
     }
     stage('Static Code Analysis'){
         withCredentials([string(credentialsId: 'jenkins-sonar-token', variable: 'SONAR_TOKEN')]) {
@@ -15,7 +15,7 @@ node('docker') {
     stage ('Integration Test'){
         sh 'mvn clean verify -Dsurefire.skip=true';
         junit '**/target/failsafe-reports/TEST-*.xml'
-        archive 'target/*.jar'
+        archive 'target/*.war'
     }
     stage ('Publish'){
         def server = Artifactory.server 'default artifactory server'
