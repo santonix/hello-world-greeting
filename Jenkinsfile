@@ -9,7 +9,7 @@ node('docker') {
     }
     stage('Static Code Analysis'){
         withCredentials([string(credentialsId: 'jenkins-sonar-token', variable: 'SONAR_TOKEN')]) {
-            sh "mvn clean verify sonar:sonar -Dsonar.projectName=example-project -Dsonar.projectKey=example-project -Dsonar.projectVersion=$BUILD_NUMBER -Dsonar.login=$SONAR_TOKEN";
+            sh "mvn clean verify sonar:sonar -Dsonar.projectName=hello-world-greeting -Dsonar.projectKey=hello-world-greeting -Dsonar.projectVersion=$BUILD_NUMBER -Dsonar.login=$SONAR_TOKEN";
         }
     }
     stage ('Integration Test'){
@@ -23,7 +23,7 @@ node('docker') {
             "files": [
                 {
                     "pattern": "target/hello-0.0.1.war",
-                    "target": "example-project/${BUILD_NUMBER}/",
+                    "target": "hello-world-greeting/${BUILD_NUMBER}/",
                     "props": "Integration-Tested=Yes;Performance-Tested=No"
                 }
             ]
