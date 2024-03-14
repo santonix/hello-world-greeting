@@ -33,23 +33,15 @@ node('docker') {
     stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
 
     stage('Run Container') {
-        steps {
-            script {
-                // Run the Docker container with the provided image
-                docker.image('performance-test-agent-0.1').run('-u jenkins -v /home/jenkins:/home/jenkins')
-            }
-        }
+        // Run the Docker container with the provided image
+        docker.image('performance-test-agent-0.1').run('-u jenkins -v /home/jenkins:/home/jenkins')
     }
 
     stage('Access Container and Run Script') {
-        steps {
-            script {
-                // Access the container as jenkins user
-                docker.image('performance-test-agent-0.1').inside('-u jenkins') {
-                    // Change directory to /home/jenkins/tomcat/bin and run startup.sh
-                    sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
-                }
-            }
+        // Access the container as jenkins user
+        docker.image('performance-test-agent-0.1').inside('-u jenkins') {
+            // Change directory to /home/jenkins/tomcat/bin and run startup.sh
+            sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
         }
     }
 
