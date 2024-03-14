@@ -31,13 +31,31 @@ node('docker') {
         server.upload(uploadSpec)
     }
     stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
-}
 
-node('docker_pt') {
-    stage ('Start Tomcat'){
-        sh '''cd /home/jenkins/tomcat/bin
-        ./startup.sh''';
-    }
+    stage('Run Container') {
+            agent {
+                docker {
+                    image 'performance-test-agent-0.1'
+                    args '-u jenkins'
+                }
+            }
+            steps {
+                // Nothing needed here since the container is already running
+            }
+        }
+
+        stage('Access Container') {
+            steps {
+                // Change directory to /home/jenkins/tomcat/bin
+                sh 'cd /home/jenkins/tomcat/bin'
+
+                // Run the startup.sh script
+                sh './startup.sh'
+            }
+        }
+
+   
+    
     stage ('Deploy '){
         unstash 'binary'
         sh 'cp target/hello-0.0.1.war /home/jenkins/tomcat/webapps/';
@@ -53,4 +71,5 @@ node('docker_pt') {
             sh 'curl -u${credentials} -X PUT "http://172.17.8.108:8081/artifactory/api/storage/example-project/${BUILD_NUMBER}/hello-0.0.1.war?properties=Performance-Tested=Yes"';
         }
     }
-}
+}  
+
