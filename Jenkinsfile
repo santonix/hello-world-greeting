@@ -33,26 +33,26 @@ node('docker') {
     stash includes: 'target/hello-0.0.1.war,src/pt/Hello_World_Test_Plan.jmx', name: 'binary'
 
     stage('Run Container') {
-            agent {
-                docker {
-                    image 'performance-test-agent-0.1'
-                    args '-u jenkins'
+            steps {
+                script {
+                    // Run the Docker container with the provided image
+                    docker.image('performance-test-agent-0.1').run('-u jenkins -v /home/jenkins:/home/jenkins')
                 }
             }
-            steps {
-                // Nothing needed here since the container is already running
-            }
-        }
+    }
 
-        stage('Access Container') {
+    stage('Access Container and Run Script') {
             steps {
-                // Change directory to /home/jenkins/tomcat/bin
-                sh 'cd /home/jenkins/tomcat/bin'
-
-                // Run the startup.sh script
-                sh './startup.sh'
-            }
-        }
+                script {
+                    // Access the container as jenkins user
+                    docker.image('performance-test-agent-0.1').inside('-u jenkins') {
+                        // Change directory to /home/jenkins/tomcat/bin and run startup.sh
+                        sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
+                    }
+              }
+          }
+    } 
+        
 
    
     
@@ -69,7 +69,7 @@ node('docker') {
     stage ('Promote build in Artifactory'){
         withCredentials([usernameColonPassword(credentialsId: 'artifactory-account', variable: 'credentials')]) {
             sh 'curl -u${credentials} -X PUT "http://172.17.8.108:8081/artifactory/api/storage/example-project/${BUILD_NUMBER}/hello-0.0.1.war?properties=Performance-Tested=Yes"';
-        }
-    }
+       }
+   }
 }  
 
