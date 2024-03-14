@@ -38,12 +38,20 @@ node('docker') {
     }
 
     stage('Access Container and Run Script') {
-        // Access the container as jenkins user
-        docker.image('performance-test-agent-0.1').inside('-u jenkins') {
-            // Change directory to /home/jenkins/tomcat/bin and run startup.sh
-            sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
-        }
-    }
+      steps {
+          script {
+            // Set the DOCKER_HOST environment variable
+              withEnv(['DOCKER_HOST=unix:///var/run/docker.sock']) {
+                // Access the container as jenkins user
+                  docker.image('performance-test-agent-0.1').inside('-u jenkins') {
+                    // Change directory to /home/jenkins/tomcat/bin and run startup.sh
+                      sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
+                  }
+              }
+          }
+      }
+   }
+
 
     stage('Deploy') {
         unstash 'binary'
