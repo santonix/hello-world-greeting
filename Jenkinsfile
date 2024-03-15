@@ -68,6 +68,7 @@ pipeline {
         stage('Start Tomcat') {
             agent { 
                docker {
+                   image 'performance-test-agent-0.1'
                    laber 'docker_pt'
                    args '-u jenkins:jenkins'
                }    
