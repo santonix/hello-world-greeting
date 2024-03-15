@@ -66,7 +66,9 @@ pipeline {
         }
 
         stage('Start Tomcat') {
-            agent { label 'docker_pt' }
+            agent { 
+                args '-u jenkins:jenkins'
+                label 'docker_pt' }
             steps {
                 sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
             }
