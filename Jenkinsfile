@@ -1,5 +1,8 @@
 pipeline {
     agent none
+    environment {
+        DOCKER_CREDENTIALS = credentials('dockerhub-credentials')
+    }
 
     stages {
         stage('Poll') {
@@ -68,7 +71,7 @@ pipeline {
         stage('Start Tomcat') {
             agent { 
                docker {
-                   image 'performance-test-agent-0.1'
+                   image 'santonix/santonix:performance-test-agent-0.1'
                    label 'docker_pt'
                    args '-u jenkins:jenkins'
                }    
