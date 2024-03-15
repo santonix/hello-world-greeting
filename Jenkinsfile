@@ -69,7 +69,7 @@ pipeline {
             agent { 
                docker {
                    image 'performance-test-agent-0.1'
-                   laber 'docker_pt'
+                   label 'docker_pt'
                    args '-u jenkins:jenkins'
                }    
                 
