@@ -61,6 +61,7 @@ pipeline {
                 }
             }
         }
+
         stage('Stash') {
             agent { label 'docker' }
             steps {
@@ -70,12 +71,12 @@ pipeline {
 
         stage('Start Tomcat') {
             agent { 
-               docker {
-                   image 'santonix/santonix:performance-test-agent-0.1'
-                   label 'docker_pt'
-                   args '-u jenkins:jenkins'
-               }    
-                
+                node {
+                    label 'docker_pt'
+                    containerProps([
+                        containerArgs: '-u jenkins:jenkins'
+                    ])
+                }
             }
             steps {
                 sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
