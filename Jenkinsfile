@@ -73,13 +73,16 @@ pipeline {
             agent { 
                 node {
                     label 'docker_pt'
-                    containerProps([
-                        containerArgs: '-u jenkins:jenkins'
-                    ])
+                   
                 }
             }
             steps {
-                sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
+                script {
+                     docker.image('santonix/santonix:performance-test-agent-0.1').inside('-u jenkins:jenkins') {
+                       sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
+                     }
+                }   
+               
             }
         }
 
