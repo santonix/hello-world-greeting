@@ -77,6 +77,7 @@ pipeline {
                 
             
             steps {
+                unstash 'binary'
                 script {
                      docker.image('santonix/santonix:performance-test-agent-0.1').inside('-u jenkins:jenkins') {
                        sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
@@ -89,7 +90,7 @@ pipeline {
         stage('Deploy') {
             agent { label 'docker_pt' }
             steps {
-                unstash 'binary'
+               
                 sh 'cp target/hello-0.0.1.war /home/jenkins/tomcat/webapps/'
             }
         }
