@@ -70,12 +70,12 @@ pipeline {
         }
 
         stage('Start Tomcat') {
-            agent { 
-                node {
-                    label 'docker_pt'
+                agent {  label 'docker_pt' }
+               
                    
-                }
-            }
+                   
+                
+            
             steps {
                 script {
                      docker.image('santonix/santonix:performance-test-agent-0.1').inside('-u jenkins:jenkins') {
@@ -115,12 +115,12 @@ pipeline {
         success {
             emailext subject: 'Jenkins Build Notification - Success',
                       body: 'Your Jenkins build was successful.',
-                      to: 'email@example.com'
+                      to: 'jofranco1203@gmail.com'
         }
         failure {
             emailext subject: 'Jenkins Build Notification - Failure',
                       body: 'Your Jenkins build failed.',
-                      to: 'email@example.com'
+                      to: 'jofranco1203@gmail.com'
         }
     }
 }
