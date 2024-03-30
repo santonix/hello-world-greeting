@@ -111,4 +111,16 @@ pipeline {
             }
         }
     }
+     post {
+        success {
+            emailext subject: 'Jenkins Build Notification - Success',
+                      body: 'Your Jenkins build was successful.',
+                      to: 'email@example.com'
+        }
+        failure {
+            emailext subject: 'Jenkins Build Notification - Failure',
+                      body: 'Your Jenkins build failed.',
+                      to: 'email@example.com'
+        }
+    }
 }
