@@ -70,7 +70,11 @@ pipeline {
         }
 
         stage('Start Tomcat') {
-                agent {  label 'docker_pt' }
+                agent {
+                    node {
+                        label 'docker_pt'
+                    }    
+                }
                
                    
                    
