@@ -24,17 +24,12 @@ pipeline {
         stage('Build & SonarQube Analysis') {
             agent { label 'docker' }
             steps {
-                // Modify Docker run command to mount Maven repository
-                script {
-                    docker.image('maven:latest').inside("-u 131:139 -v /home/bonny/.m2/repository:/root/.m2/repository") {
-                        withSonarQubeEnv(credentialsId: 'sonar-token', installationName: 'sonarqube server') {
-                            sh '''mvn clean verify sonar:sonar \
-                                -Dsonar.projectName=hello-world-greeting \
-                                -Dsonar.projectKey=hello-world-greeting \
-                                -Dsonar.projectVersion=${BUILD_NUMBER} \
-                                -Dsonar.java.binaries=target/classes'''
-                        }
-                    }
+                withSonarQubeEnv(credentialsId: 'sonar-token', installationName: 'sonarqube server') {
+                    sh '''mvn clean verify sonar:sonar \
+                        -Dsonar.projectName=hello-world-greeting \
+                        -Dsonar.projectKey=hello-world-greeting \
+                        -Dsonar.projectVersion=${BUILD_NUMBER} \
+                        -Dsonar.java.binaries=target/classes'''
                 }
             }
         }
@@ -79,11 +74,13 @@ pipeline {
                 label 'docker_pt'
             }
             steps {
-                // Run the Docker container with the provided image
-                docker.image('santonix/santonix/performance-test-agent-0.1').inside("-u jenkins -v /home/jenkins:/home/jenkins") {
-                    // Inside the container
-                    // Change directory to /home/jenkins/tomcat/bin and run startup.sh
-                    sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
+                script {
+                    // Run the Docker container with the provided image
+                    docker.image('santonix/santonix/performance-test-agent-0.1').inside("-u jenkins -v /home/jenkins:/home/jenkins") {
+                        // Inside the container
+                        // Change directory to /home/jenkins/tomcat/bin and run startup.sh
+                        sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
+                    }
                 }
             }
         }
