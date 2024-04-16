@@ -1,5 +1,6 @@
 pipeline {
     agent none
+    
     environment {
         DOCKER_CREDENTIALS = credentials('dockerhub-credentials')
     }
@@ -70,20 +71,18 @@ pipeline {
         }
 
         stage('Start Tomcat') {
-            agent {
-                label 'docker_pt'
-            }
+            agent { label 'docker_pt' }
             steps {
-                
+                script {
                     // Run the Docker container with the provided image
-                   docker.image('santonix/santonix/performance-test-agent-0.1').inside("-u jenkins -v /home/jenkins:/home/jenkins") {
+                    docker.image('santonix/santonix/performance-test-agent-0.1').inside("-u jenkins -v /home/jenkins:/home/jenkins") {
                         // Inside the container
                         // Change directory to /home/jenkins/tomcat/bin and run startup.sh
                         sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
-                   
+                    }
                 }
             }
-       
+        }
 
         stage('Deploy') {
             steps {
