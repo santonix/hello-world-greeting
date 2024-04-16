@@ -70,54 +70,53 @@ pipeline {
         }
 
         stage('Start Tomcat') {
-                agent {
-                    node {
-                        label 'docker_pt'
-                    }    
-                }
-               
-                   
-                   
-                
-            
+            agent {
+                label 'docker_pt'
+            }
             steps {
-                unstash 'binary'
-                 sh './startup.sh'
-               
-                     
-                      
-                    
-                 
-               
+                script {
+                    // Run the Docker container with the provided image
+                    docker.image('santonix/santonix/performance-test-agent-0.1').inside("-u jenkins -v /home/jenkins:/home/jenkins") {
+                        // Inside the container
+                        // Change directory to /home/jenkins/tomcat/bin and run startup.sh
+                        sh 'cd /home/jenkins/tomcat/bin && ./startup.sh'
+                    }
+                }
             }
         }
 
         stage('Deploy') {
-            agent { label 'docker_pt' }
             steps {
-               
+                // Retrieve stashed artifacts and deploy
+                unstash 'binary'
                 sh 'cp target/hello-0.0.1.war /home/jenkins/tomcat/webapps/'
             }
         }
 
         stage('Performance Testing') {
-            agent { label 'docker_pt' }
             steps {
-                sh 'cd /opt/jmeter/bin && ./jmeter.sh -n -t $WORKSPACE/src/pt/Hello_World_Test_Plan.jmx -l $WORKSPACE/test_report.jtl'
+                // Execute JMeter for performance testing
+                sh '''
+                    #!/bin/bash -l
+                    cd /opt/jmeter/bin/
+                    ./jmeter.sh -n -t $WORKSPACE/src/pt/Hello_World_Test_Plan.jmx -l $WORKSPACE/test_report.jtl
+                '''
+                // Archive JMeter test results
                 step([$class: 'ArtifactArchiver', artifacts: '**/*.jtl'])
             }
         }
 
         stage('Promote build in Artifactory') {
-            agent { label 'docker_pt' }
             steps {
-                withCredentials([usernamePassword(credentialsId: 'artifactory-account', variable: 'credentials')]) {
+                // Promote build in Artifactory with credentials
+                withCredentials([usernameColonPassword(credentialsId: 'artifactory-account', variable: 'credentials')]) {
                     sh 'curl -u${credentials} -X PUT "http://172.17.8.108:8081/artifactory/api/storage/example-project/${BUILD_NUMBER}/hello-0.0.1.war?properties=Performance-Tested=Yes"'
                 }
             }
-        }
+        } 
     }
-     post {
+
+    post {
         success {
             emailext subject: 'Jenkins Build Notification - Success',
                       body: 'Your Jenkins build was successful.',
@@ -130,3 +129,4 @@ pipeline {
         }
     }
 }
+
