@@ -12,7 +12,7 @@ node('docker') {
         archiveArtifacts artifacts: 'target/*.war', fingerprint: true
     }
 
-    post {
+    stage('Email Notification') {
         success {
             emailext subject: 'Jenkins Build Notification - Success',
                       body: 'Your Jenkins build was successful.',
