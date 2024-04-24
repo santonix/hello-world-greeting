@@ -20,6 +20,7 @@ node('docker') {
             -Dsonar.projectName=example-project
             -Dsonar.projectKey=example-project 
             -Dsonar.projectVersion=$BUILD_NUMBER
+             -Dsonar.login=sonar-token
         '''
     }
 
