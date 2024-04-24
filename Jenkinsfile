@@ -12,6 +12,12 @@ node('docker') {
         archiveArtifacts artifacts: 'target/*.war', fingerprint: true
     }
 
+    stage('Static Code Analysis'){
+        sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project
+        -Dsonar.projectKey=example-project 
+        -Dsonar.projectVersion=$BUILD_NUMBER';
+    }
+
     stage('Email Notification') {
         emailext subject: 'Jenkins Build Notification',
                   body: "Your Jenkins build ${currentBuild.result} - ${currentBuild.currentResult}",
