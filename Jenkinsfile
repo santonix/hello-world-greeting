@@ -13,15 +13,8 @@ node('docker') {
     }
 
     stage('Email Notification') {
-        success {
-            emailext subject: 'Jenkins Build Notification - Success',
-                      body: 'Your Jenkins build was successful.',
-                      to: 'jofranco1203@gmail.com'
-        }
-        failure {
-            emailext subject: 'Jenkins Build Notification - Failure',
-                      body: 'Your Jenkins build failed.',
-                      to: 'jofranco1203@gmail.com'
-        }
+        emailext subject: 'Jenkins Build Notification',
+                  body: "Your Jenkins build ${currentBuild.result} - ${currentBuild.currentResult}",
+                  recipientProviders: [[$class: 'DevelopersRecipientProvider']]
     }
 }
