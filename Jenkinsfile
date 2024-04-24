@@ -15,8 +15,7 @@ node('docker') {
     stage('Static Code Analysis') {
         sh '''
             mvn clean verify sonar:sonar 
-            -Dsonar.login=admin
-            -Dsonar.password=walter
+            
             -Dsonar.projectName=example-project
             -Dsonar.projectKey=example-project 
             -Dsonar.projectVersion=$BUILD_NUMBER
