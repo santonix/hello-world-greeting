@@ -12,10 +12,13 @@ node('docker') {
         archiveArtifacts artifacts: 'target/*.war', fingerprint: true
     }
 
-    stage('Static Code Analysis'){
-        sh 'mvn clean verify sonar:sonar -Dsonar.projectName=example-project
-        -Dsonar.projectKey=example-project 
-        -Dsonar.projectVersion=$BUILD_NUMBER';
+    stage('Static Code Analysis') {
+        sh '''
+            mvn clean verify sonar:sonar 
+            -Dsonar.projectName=example-project
+            -Dsonar.projectKey=example-project 
+            -Dsonar.projectVersion=$BUILD_NUMBER
+        '''
     }
 
     stage('Email Notification') {
